@@ -101,9 +101,16 @@ def dec_from_prifile(base64_enc_msg, pri_file):
     pri_key = importKey(from_file(pri_file))
     return decrypt(b64decode(base64_enc_msg), pri_key)
 
+# encode list content line by line, then return new list
+def enc_list_to_list(ori_list, pub_str):
+    enc_list = []
+    pub_key = importKey(pub_str)
+    for line in ori_list:
+        enc_list.append(b64encode(encrypt(line.strip(), pub_key)))
+    return enc_list
 
 # encode file's content line by line, then write line by line to new file
-def enc_file_to_file(ori_file, pub_file, enc_file):
+def enc_file_to_file(ori_file, pub_file, enc_file=None):
     enc_list = []
     pub_key = importKey(from_file(pub_file))
     for line in open(ori_file, 'r'):
@@ -112,6 +119,13 @@ def enc_file_to_file(ori_file, pub_file, enc_file):
     newFile.write("\n".join(enc_list))
     return enc_list
 
+# decode list content line by line, then return new list
+def dec_list_to_list(enc_list, pri_str):
+    dec_list = []
+    pri_key = importKey(pri_str)
+    for line in enc_list:
+        dec_list.append(decrypt(b64decode(line.strip()), pri_key))
+    return dec_list
 
 # decode file's content line by line, then write line by line to new file, return decode list
 def dec_file_to_file(enc_file, pri_file, dec_file=None):
